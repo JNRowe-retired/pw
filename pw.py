@@ -6,10 +6,13 @@ import optparse
 import signal
 import subprocess
 import sys
-import xerox
 import yaml
 import termcolor
 
+try:
+  import xerox
+except ImportError:
+  xerox = False
 
 def main():
   VERSION = '%prog 0.3.0'
@@ -32,7 +35,7 @@ def main():
 
   # parse command-line options
   parser = optparse.OptionParser(usage='Usage: %prog [options] [[userquery@]pathquery]', version=VERSION)
-  parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
+  parser.add_option('-E', '--echo', default=bool(xerox), action='store_true', help='echo passwords on console (default, if xerox unavailable)')
   parser.add_option('-s', '--strict', action='store_true', help='fail if password should be copied to clipboard but more than one result has been found')
   opts, args = parser.parse_args()
 
@@ -128,7 +131,7 @@ def main():
     if len(results) == 1:
       # display entry in expanded mode
       print
-      if opts.echo:
+      if not xerox or opts.echo:
         print '  ', color_password(entry.password)
       else:
         xerox.copy(entry.password)
@@ -139,9 +142,9 @@ def main():
         print '  ', entry.notes
     else:
       # otherwise abbreviate results
-      if opts.echo:
+      if not xerox or opts.echo:
         print '|', color_password(entry.password),
-      elif idx == 0:
+      elif xerox and idx == 0:
         xerox.copy(entry.password)
         print color_success('*** PASSWORD COPIED TO CLIPBOARD ***'),
       if entry.link or entry.notes:

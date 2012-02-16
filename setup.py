@@ -19,5 +19,6 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description = open(join(dirname(abspath(__file__)), 'README.txt')).read(),
-  install_requires=['PyYAML', 'xerox', 'termcolor'],
+  install_requires=['PyYAML', 'termcolor'],
+  extras_require={'clipboard': 'xerox', },
 )
