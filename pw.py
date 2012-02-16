@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from collections import namedtuple
 from functools import partial
-import os, os.path
+import os
 import optparse
 import signal
 import subprocess
