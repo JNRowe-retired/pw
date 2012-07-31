@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 from collections import namedtuple
-from functools import partial
 import os
 import optparse
 import signal
 import subprocess
 import sys
+import blessings
 import yaml
-import termcolor
 
 try:
   import xerox
@@ -17,7 +16,7 @@ except ImportError:
 def main():
   VERSION = '%prog 0.3.0'
   DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
-  HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
+  T = blessings.Terminal()
 
   # install silent Ctrl-C handler
   def handle_sigint(*_):
@@ -25,13 +24,10 @@ def main():
     sys.exit(1)
   signal.signal(signal.SIGINT, handle_sigint)
 
-  # disable termcolor for terminals not supporting color
-  colored = termcolor.colored if HAVE_COLOR_TERM else lambda text, *args, **kwargs: text
-
   # color wrappers
-  color_match = partial(colored, color='yellow', attrs=['bold'])
-  color_password = partial(colored, color='red', attrs=['bold'])
-  color_success = partial(colored, color='green', attrs=['bold', 'reverse'])
+  color_match = T.bold_yellow
+  color_password = T.bold_red
+  color_success = T.bold_reverse_green
 
   # parse command-line options
   parser = optparse.OptionParser(usage='Usage: %prog [options] [[userquery@]pathquery]', version=VERSION)
